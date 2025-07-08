@@ -1,93 +1,40 @@
-# Exa MCP Server with Nango Authentication
+# Exa MCP Server
 
-A Model Context Protocol server with Exa for web search, academic paper search, and Twitter/X.com search. Provides real-time web searches with configurable tool selection, allowing users to enable or disable specific search capabilities. Supports customizable result counts, live crawling options, and returns content from the most relevant websites.
-
-**Version 2.0.0** now uses **Nango** for authentication instead of direct API key management.
+A Model Context Protocol server that integrates Exa AI's search capabilities with Claude and other MCP clients. Provides 8 powerful search tools with secure Nango authentication.
 
 ## Features
 
-- **Real-time web search** using Exa AI
-- **Academic paper search** from scholarly sources
-- **Company research** with business intelligence
-- **Web crawling** for content extraction
-- **Competitor analysis** and market research
-- **LinkedIn search** for professional networking
-- **Wikipedia search** for factual information
-- **GitHub search** for code repositories and projects
-- **Nango authentication** for secure API access management
-- **MCP Inspector support** for development and testing
+- 🔍 **Web Search** - Real-time web search with Exa AI
+- 📚 **Research Papers** - Academic and scholarly content search
+- 🏢 **Company Research** - Business intelligence and company data
+- 🌐 **Web Crawling** - Extract content from specific URLs
+- 🔍 **Competitor Analysis** - Find and analyze business competitors
+- 💼 **LinkedIn Search** - Professional profiles and company pages
+- 📖 **Wikipedia Search** - Comprehensive encyclopedia search
+- 💻 **GitHub Search** - Code repositories and developer profiles
+- 🔐 **Secure Authentication** - Nango-based credential management
+- 🔧 **MCP Inspector Support** - Easy testing and development
 
 ## Quick Start
 
-### 1. Install Dependencies
 ```bash
+# Install
 npm install
-```
 
-### 2. Set Up Environment
-```bash
+# Configure environment
 cp .env.example .env
 # Edit .env with your Nango credentials
-```
 
-### 3. Build Project
-```bash
-npm run build
-```
-
-### 4. Run with MCP Inspector
-```bash
+# Run with MCP Inspector
 npm run inspector
 ```
 
-### 5. Or Run CLI Directly
-```bash
-npm run start:cli
-```
-
-## Authentication Setup
-
-This server now uses Nango for authentication management. You'll need to configure your Nango environment variables in a `.env` file.
-
-### 1. Create a `.env` file
-
-Copy the example configuration:
-
-```bash
-# Nango Configuration
-NANGO_CONNECTION_ID=your_connection_id_here
-NANGO_INTEGRATION_ID=your_integration_id_here
-NANGO_BASE_URL=https://api.nango.dev
-NANGO_SECRET_KEY=your_secret_key_here
-
-# Optional: Debug logging
-DEBUG=true
-```
-
-### 2. Configure Nango
-
-1. Set up your Nango account and create an integration for Exa API
-2. Configure the connection with your Exa API credentials
-3. Update the `.env` file with your Nango credentials:
-   - `NANGO_CONNECTION_ID`: Your connection ID from Nango
-   - `NANGO_INTEGRATION_ID`: Your integration ID from Nango
-   - `NANGO_BASE_URL`: Nango API base URL (usually https://api.nango.dev)
-   - `NANGO_SECRET_KEY`: Your secret key from Nango
-
-### 3. Required Environment Variables
-
-All Nango environment variables are required for the server to function:
-
-- `NANGO_CONNECTION_ID` - Connection identifier
-- `NANGO_INTEGRATION_ID` - Integration identifier  
-- `NANGO_BASE_URL` - Nango API endpoint
-- `NANGO_SECRET_KEY` - Authentication secret
-
-## Installation & Build
+## Installation
 
 ### From NPM
 ```bash
-npm install exa-mcp-server
+npm install -g exa-mcp-server
+exa-mcp-server
 ```
 
 ### From Source
@@ -95,279 +42,207 @@ npm install exa-mcp-server
 git clone <repository-url>
 cd exa-mcp-server
 npm install
-npm run build
-```
-
-### Build Scripts
-```bash
-# Full build (TypeScript + validation)
-npm run build
-
-# TypeScript compilation only
-npm run build:ts
-
-# Clean build directory
-npm run clean
-
-# Watch mode for development
-npm run watch
-
-# Test CLI connectivity
-npm run test:cli
-```
-
-## Usage
-
-### With MCP Inspector (Recommended for Development)
-```bash
-# Run with MCP inspector for testing
 npm run inspector
 ```
 
-### With CLI Mode
-```bash
-# Run the CLI with MCP transport
-npm run start:cli
+## Configuration
 
-# Or run directly (after build)
-node dist/cli.js
+### Environment Variables
+
+Create a `.env` file with your Nango credentials:
+
+```bash
+# Required Nango Configuration
+NANGO_CONNECTION_ID=your_connection_id
+NANGO_INTEGRATION_ID=your_integration_id
+NANGO_BASE_URL=https://api.nango.dev
+NANGO_SECRET_KEY=your_secret_key
+
+# Optional
+DEBUG=true
 ```
 
-### As Global Command
-```bash
-# Install globally
-npm install -g exa-mcp-server
+### Nango Setup
 
-# Run from anywhere
+1. Create a Nango account at [nango.dev](https://nango.dev)
+2. Set up an integration for Exa API
+3. Configure your connection with Exa API credentials
+4. Update `.env` with your Nango credentials
+
+## Usage
+
+### MCP Inspector (Development)
+```bash
+npm run inspector
+```
+
+### CLI Mode
+```bash
+npm run start:cli
+```
+
+### Global Command
+```bash
 exa-mcp-server
 ```
 
-### Development Mode
+### Development
 ```bash
-# Run in development mode with Smithery
-npm run dev
-
-# Test CLI connectivity
-npm run test:cli
+npm run dev        # Development mode
+npm run watch      # Watch TypeScript
+npm test          # Run tests
 ```
-
-## Project Structure
-
-```
-exa-mcp-server/
-├── src/                    # Source TypeScript files
-│   ├── auth/
-│   │   └── nango.ts       # Nango authentication
-│   ├── tools/             # Tool implementations
-│   ├── utils/             # Utility functions
-│   ├── index.ts           # Main server function
-│   ├── cli.ts             # CLI entry point with MCP transport
-│   └── types.ts           # Type definitions
-├── dist/                  # Compiled JavaScript (generated)
-│   ├── index.js           # Main server function
-│   ├── cli.js             # CLI entry point
-│   └── ...                # Other compiled files
-├── scripts/               # Build and test scripts
-├── .env                   # Environment variables
-├── .env.example           # Environment template
-├── package.json
-├── tsconfig.json
-└── README.md
-```
-
-## Entry Points
-
-### 1. CLI Entry Point (`dist/cli.js`)
-- **Purpose**: MCP Inspector and command-line usage
-- **Transport**: StdioServerTransport (JSON-RPC over stdio)
-- **Usage**: `npm run inspector`, `npm run start:cli`, `exa-mcp-server`
-
-### 2. Server Function (`dist/index.js`)
-- **Purpose**: Programmatic usage and Smithery integration
-- **Transport**: Configurable (used by frameworks)
-- **Usage**: `npm run dev`, import as module
 
 ## Available Tools
 
 ### 1. Web Search (`web_search_exa`)
-Performs real-time web searches using Exa AI.
+Real-time web search with configurable results.
 
 **Parameters:**
 - `query` (string): Search query
-- `numResults` (number, optional): Number of results to return (default: 5)
+- `numResults` (number, optional): Results count (default: 5)
 
-### 2. Research Paper Search (`research_paper_search_exa`)
-Searches for academic papers and research.
+### 2. Research Papers (`research_paper_search_exa`)
+Academic and scholarly content search.
 
 **Parameters:**
-- `query` (string): Research paper search query
-- `numResults` (number, optional): Number of papers to return (default: 5)
+- `query` (string): Research query
+- `numResults` (number, optional): Results count (default: 5)
 
 ### 3. Company Research (`company_research_exa`)
-Researches companies and organizations.
+Business intelligence and company data.
 
 **Parameters:**
-- `companyName` (string): Name of the company to research
-- `numResults` (number, optional): Number of results to return (default: 5)
+- `companyName` (string): Company name
+- `numResults` (number, optional): Results count (default: 5)
 
 ### 4. Web Crawling (`crawling_exa`)
-Extracts content from specific URLs.
+Extract content from specific URLs.
 
 **Parameters:**
-- `url` (string): URL to crawl and extract content from
-- `maxCharacters` (number, optional): Maximum characters to extract (default: 3000)
+- `url` (string): URL to crawl
+- `maxCharacters` (number, optional): Max content length (default: 3000)
 
 ### 5. Competitor Finder (`competitor_finder_exa`)
-Finds business competitors and market analysis.
+Find and analyze business competitors.
 
 **Parameters:**
-- `companyName` (string): Company to find competitors for
-- `industry` (string, optional): Industry sector to narrow search
-- `numResults` (number, optional): Number of competitors to find (default: 5)
+- `companyName` (string): Company name
+- `industry` (string, optional): Industry filter
+- `numResults` (number, optional): Results count (default: 5)
 
 ### 6. LinkedIn Search (`linkedin_search_exa`)
-Searches LinkedIn profiles and companies.
+Professional profiles and company pages.
 
 **Parameters:**
-- `query` (string): LinkedIn search query
-- `searchType` (enum, optional): Type of search - "profiles", "companies", or "all" (default: "all")
-- `numResults` (number, optional): Number of results to return (default: 5)
+- `query` (string): Search query
+- `searchType` (enum, optional): "profiles", "companies", "all" (default: "all")
+- `numResults` (number, optional): Results count (default: 5)
 
 ### 7. Wikipedia Search (`wikipedia_search_exa`)
-Searches Wikipedia articles.
+Comprehensive encyclopedia search.
 
 **Parameters:**
-- `query` (string): Wikipedia search query
-- `numResults` (number, optional): Number of articles to return (default: 5)
+- `query` (string): Search query
+- `numResults` (number, optional): Results count (default: 5)
 
 ### 8. GitHub Search (`github_search_exa`)
-Searches GitHub repositories and code.
+Code repositories and developer profiles.
 
 **Parameters:**
-- `query` (string): GitHub search query
-- `searchType` (enum, optional): Type of search - "repositories", "code", "users", or "all" (default: "all")
-- `numResults` (number, optional): Number of results to return (default: 5)
-
-## Configuration
-
-### Tool Selection
-
-You can configure which tools are enabled by setting the `enabledTools` parameter:
-
-```javascript
-{
-  "enabledTools": ["web_search_exa", "research_paper_search_exa", "company_research_exa"]
-}
-```
-
-### Debug Mode
-
-Enable debug logging by setting `debug: true` in configuration or `DEBUG=true` in your `.env` file.
+- `query` (string): Search query
+- `searchType` (enum, optional): "repositories", "code", "users", "all" (default: "all")
+- `numResults` (number, optional): Results count (default: 5)
 
 ## Development
 
-For detailed development instructions, see [DEVELOPMENT.md](DEVELOPMENT.md).
-
-### Quick Development Setup
+### Build
 ```bash
-# Install dependencies
+npm run build      # Full build
+npm run build:ts   # TypeScript only
+npm run clean      # Clean build files
+```
+
+### Testing
+```bash
+npm run test:nango    # Test Nango auth
+npm run test:exa      # Test Exa API
+npm run test:cli      # Test CLI connectivity
+npm test             # Run all tests
+```
+
+### Project Structure
+```
+exa-mcp-server/
+├── src/
+│   ├── auth/nango.ts        # Nango authentication
+│   ├── tools/               # Search tool implementations
+│   ├── utils/logger.ts      # Logging utilities
+│   ├── index.ts            # Main server function
+│   ├── cli.ts              # CLI entry point
+│   └── types.ts            # Type definitions
+├── dist/                   # Compiled output
+├── scripts/                # Build and test scripts
+├── .env.example           # Environment template
+└── package.json
+```
+
+## Troubleshooting
+
+### Authentication Issues
+```bash
+# Test Nango connection
+npm run test:nango
+
+# Check environment variables
+echo $NANGO_CONNECTION_ID
+```
+
+### Build Issues
+```bash
+# Clean rebuild
+npm run clean
+npm run build
+
+# Check TypeScript
+npx tsc --noEmit
+```
+
+### Runtime Issues
+```bash
+# Validate build
+npm run validate
+
+# Debug mode
+DEBUG=true npm run start:cli
+```
+
+## Updates
+
+### Update All Dependencies
+```bash
+npm run update
+```
+
+### Manual Update
+```bash
+npm install -g npm@latest
+rm -rf node_modules package-lock.json
 npm install
-
-# Set up environment
-cp .env.example .env
-# Edit .env with your credentials
-
-# Build and test
-npm run build
-npm run test:cli
-
-# Run with inspector
-npm run inspector
-```
-
-## Testing
-
-### CLI Connectivity Test
-```bash
-# Test CLI startup and MCP connectivity
-npm run test:cli
-```
-
-### MCP Inspector
-```bash
-# Run with MCP inspector for interactive testing
-npm run inspector
-```
-
-### Manual Testing
-```bash
-# Start CLI manually
-npm run start:cli
-
-# In another terminal, test with curl or MCP client
-# The CLI uses stdio transport for MCP communication
-```
-
-## Migration from v1.x
-
-If you're migrating from version 1.x, see the detailed [MIGRATION.md](MIGRATION.md) guide.
-
-### Breaking Changes in v2.0.0
-
-- **Removed**: `exaApiKey` configuration parameter
-- **Removed**: `EXA_API_KEY` environment variable support
-- **Added**: Nango authentication system
-- **Added**: Required Nango environment variables
-- **Added**: TypeScript compilation to `dist/` directory
-- **Added**: Separate CLI entry point for MCP inspector
-- **Changed**: All tools now use Nango for authentication
-
-## Error Handling
-
-The server provides specific error messages for common authentication issues:
-
-- **Authentication Error**: "Failed to retrieve access token from Nango"
-- **Configuration Error**: "Missing required Nango environment variables"
-- **Connection Error**: API connection issues with detailed error messages
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Build and test: `npm run build && npm run test:cli`
-5. Test with inspector: `npm run inspector`
-6. Submit a pull request
-
-### Development Workflow
-```bash
-# Set up development environment
-npm install
-npm run build
-
-# Make changes to src/
-# ...
-
-# Rebuild and test
-npm run build
-npm run test:cli
-npm run inspector
 ```
 
 ## License
 
-This project is licensed under the MIT License.
+MIT License - see LICENSE file for details.
 
 ## Support
 
-For issues and questions:
-- Create an issue on GitHub
-- Check the [DEVELOPMENT.md](DEVELOPMENT.md) for development setup
-- Review the [MIGRATION.md](MIGRATION.md) for upgrade instructions
-- Test with MCP inspector: `npm run inspector`
-- Check the Nango documentation for authentication setup
-- Review the Exa AI documentation for API details
+- Create GitHub issues for bugs
+- Check MCP Inspector: `npm run inspector`
+- Test authentication: `npm run test:nango`
+- Review [Nango documentation](https://docs.nango.dev) for auth setup
+- Check [Exa API documentation](https://docs.exa.ai) for API details
 
 ---
 
-**Note**: This server requires proper Nango configuration to function. Make sure to set up your Nango integration and environment variables before using the server. Use `npm run inspector` to test with the MCP inspector.
+**Note**: Requires Nango configuration. See `.env.example` for setup instructions.

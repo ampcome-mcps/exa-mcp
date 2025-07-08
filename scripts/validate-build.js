@@ -14,42 +14,69 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 const projectRoot = dirname(__dirname);
+const isPostInstall = process.argv.includes('--post-install');
 
 console.log('🔍 Validating build...');
 
 // Check if dist directory exists
 const distPath = join(projectRoot, 'dist');
 if (!existsSync(distPath)) {
-  console.error('❌ dist/ directory not found. Run "npm run build" first.');
-  process.exit(1);
+  console.error('❌ dist/ directory not found.');
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create the dist directory');
+    process.exit(0); // Don't fail post-install
+  } else {
+    console.error('   Run "npm run build" first.');
+    process.exit(1);
+  }
 }
 
 // Check if main entry point exists
 const mainEntry = join(distPath, 'index.js');
 if (!existsSync(mainEntry)) {
   console.error('❌ Main entry point dist/index.js not found.');
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create the entry point');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 // Check if CLI entry point exists
 const cliEntry = join(distPath, 'cli.js');
 if (!existsSync(cliEntry)) {
   console.error('❌ CLI entry point dist/cli.js not found.');
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create the CLI entry point');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 // Check if type definitions exist
 const typeDefinitions = join(distPath, 'index.d.ts');
 if (!existsSync(typeDefinitions)) {
   console.error('❌ Type definitions dist/index.d.ts not found.');
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create type definitions');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 // Check if all tool files exist
 const toolsPath = join(distPath, 'tools');
 if (!existsSync(toolsPath)) {
   console.error('❌ tools/ directory not found in dist/.');
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create the tools directory');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 const expectedTools = [
@@ -67,35 +94,60 @@ const expectedTools = [
 const missingTools = expectedTools.filter(tool => !existsSync(join(toolsPath, tool)));
 if (missingTools.length > 0) {
   console.error('❌ Missing tool files:', missingTools.join(', '));
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create all tool files');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 // Check if auth directory exists
 const authPath = join(distPath, 'auth');
 if (!existsSync(authPath)) {
   console.error('❌ auth/ directory not found in dist/.');
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create the auth directory');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 // Check if nango auth file exists
 const nangoAuth = join(authPath, 'nango.js');
 if (!existsSync(nangoAuth)) {
   console.error('❌ Nango authentication file not found: dist/auth/nango.js');
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create the auth files');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 // Check if utils directory exists
 const utilsPath = join(distPath, 'utils');
 if (!existsSync(utilsPath)) {
   console.error('❌ utils/ directory not found in dist/.');
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create the utils directory');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 // Check if logger utility exists
 const loggerUtil = join(utilsPath, 'logger.js');
 if (!existsSync(loggerUtil)) {
   console.error('❌ Logger utility not found: dist/utils/logger.js');
-  process.exit(1);
+  if (isPostInstall) {
+    console.log('   Run "npm run build" to create the logger utility');
+    process.exit(0);
+  } else {
+    process.exit(1);
+  }
 }
 
 // Check file sizes to ensure they're not empty
@@ -110,7 +162,12 @@ for (const file of criticalFiles) {
   const stats = statSync(file.path);
   if (stats.size === 0) {
     console.error(`❌ ${file.name} is empty. Build may have failed.`);
-    process.exit(1);
+    if (isPostInstall) {
+      console.log('   Run "npm run build" to rebuild the project');
+      process.exit(0);
+    } else {
+      process.exit(1);
+    }
   }
 }
 

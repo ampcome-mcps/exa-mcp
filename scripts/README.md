@@ -1,58 +1,38 @@
-# Build Scripts
+# Essential Scripts
 
-This directory contains build and validation scripts for the exa-mcp-server project.
+This directory contains essential build and test scripts for the exa-mcp-server project.
 
-## validate-build.js
+## Scripts
 
-Validates that the TypeScript build was successful by checking:
+### `validate-build.js`
+Validates that the TypeScript build was successful.
 
-- ✅ All required files exist in `dist/`
-- ✅ Files are not empty
-- ✅ Proper directory structure
-- ✅ Build statistics and file sizes
+### `debug-nango.js`
+Tests Nango authentication and connection.
 
-### Usage
+### `test-exa-api.js`
+Tests Exa API connectivity with Nango credentials.
+
+### `test-cli.js`
+Tests CLI connectivity and MCP transport.
+
+### `update-all.js`
+Updates npm and all dependencies to latest versions.
+
+### `cleanup.js`
+Removes obsolete files and optimizes the codebase.
+
+## Usage
 
 ```bash
-# Run validation after build
+# Run validation
 npm run validate
 
-# Or run directly
-node scripts/validate-build.js
+# Test authentication
+npm run test:nango
+npm run test:exa
+npm run test:cli
+
+# Update everything
+npm run update
 ```
-
-### What it checks
-
-1. **Main entry point**: `dist/index.js` and `dist/index.d.ts`
-2. **Authentication**: `dist/auth/nango.js`
-3. **Tools**: All 8 tool files in `dist/tools/`
-4. **Utilities**: `dist/utils/logger.js`
-5. **File integrity**: Ensures files are not empty
-6. **Build size**: Reports total build size
-
-### Output
-
-```
-🔍 Validating build...
-✅ Build validation successful!
-📦 Build size: 45.67 KB
-📁 Generated files:
-   - dist/index.js (12.34 KB)
-   - dist/index.d.ts (2.45 KB)
-   - dist/auth/nango.js (3.21 KB)
-   - dist/tools/ (9 files)
-   - dist/utils/ (logger.js)
-
-🚀 Ready to run:
-   npm start              (Run compiled server)
-   npm run dev            (Run in development mode)
-```
-
-## Adding New Scripts
-
-To add new build scripts:
-
-1. Create the script file in this directory
-2. Make it executable: `chmod +x script-name.js`
-3. Add to package.json scripts section
-4. Document in this README

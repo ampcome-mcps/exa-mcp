@@ -1,202 +1,373 @@
-# Exa MCP Server 🔍
-[![npm version](https://badge.fury.io/js/exa-mcp-server.svg)](https://www.npmjs.com/package/exa-mcp-server)
-[![smithery badge](https://smithery.ai/badge/exa)](https://smithery.ai/server/exa)
+# Exa MCP Server with Nango Authentication
 
-A Model Context Protocol (MCP) server lets AI assistants like Claude use the Exa AI Search API for web searches. This setup allows AI models to get real-time web information in a safe and controlled way.
+A Model Context Protocol server with Exa for web search, academic paper search, and Twitter/X.com search. Provides real-time web searches with configurable tool selection, allowing users to enable or disable specific search capabilities. Supports customizable result counts, live crawling options, and returns content from the most relevant websites.
 
-## Remote Exa MCP 🌐
+**Version 2.0.0** now uses **Nango** for authentication instead of direct API key management.
 
-Connect directly to Exa's hosted MCP server (instead of running it locally).
+## Features
 
-### Remote Exa MCP URL
+- **Real-time web search** using Exa AI
+- **Academic paper search** from scholarly sources
+- **Company research** with business intelligence
+- **Web crawling** for content extraction
+- **Competitor analysis** and market research
+- **LinkedIn search** for professional networking
+- **Wikipedia search** for factual information
+- **GitHub search** for code repositories and projects
+- **Nango authentication** for secure API access management
+- **MCP Inspector support** for development and testing
 
-```
-https://mcp.exa.ai/mcp?exaApiKey=your-exa-api-key
-```
+## Quick Start
 
-Replace `your-api-key-here` with your actual Exa API key from [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys).
-
-### Claude Desktop Configuration for Remote MCP
-
-Add this to your Claude Desktop configuration file:
-
-```json
-{
-  "mcpServers": {
-    "exa": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "mcp-remote",
-        "https://mcp.exa.ai/mcp?exaApiKey=your-exa-api-key"
-      ]
-    }
-  }
-}
+### 1. Install Dependencies
+```bash
+npm install
 ```
 
-### NPM Installation
+### 2. Set Up Environment
+```bash
+cp .env.example .env
+# Edit .env with your Nango credentials
+```
+
+### 3. Build Project
+```bash
+npm run build
+```
+
+### 4. Run with MCP Inspector
+```bash
+npm run inspector
+```
+
+### 5. Or Run CLI Directly
+```bash
+npm run start:cli
+```
+
+## Authentication Setup
+
+This server now uses Nango for authentication management. You'll need to configure your Nango environment variables in a `.env` file.
+
+### 1. Create a `.env` file
+
+Copy the example configuration:
 
 ```bash
+# Nango Configuration
+NANGO_CONNECTION_ID=your_connection_id_here
+NANGO_INTEGRATION_ID=your_integration_id_here
+NANGO_BASE_URL=https://api.nango.dev
+NANGO_SECRET_KEY=your_secret_key_here
+
+# Optional: Debug logging
+DEBUG=true
+```
+
+### 2. Configure Nango
+
+1. Set up your Nango account and create an integration for Exa API
+2. Configure the connection with your Exa API credentials
+3. Update the `.env` file with your Nango credentials:
+   - `NANGO_CONNECTION_ID`: Your connection ID from Nango
+   - `NANGO_INTEGRATION_ID`: Your integration ID from Nango
+   - `NANGO_BASE_URL`: Nango API base URL (usually https://api.nango.dev)
+   - `NANGO_SECRET_KEY`: Your secret key from Nango
+
+### 3. Required Environment Variables
+
+All Nango environment variables are required for the server to function:
+
+- `NANGO_CONNECTION_ID` - Connection identifier
+- `NANGO_INTEGRATION_ID` - Integration identifier  
+- `NANGO_BASE_URL` - Nango API endpoint
+- `NANGO_SECRET_KEY` - Authentication secret
+
+## Installation & Build
+
+### From NPM
+```bash
+npm install exa-mcp-server
+```
+
+### From Source
+```bash
+git clone <repository-url>
+cd exa-mcp-server
+npm install
+npm run build
+```
+
+### Build Scripts
+```bash
+# Full build (TypeScript + validation)
+npm run build
+
+# TypeScript compilation only
+npm run build:ts
+
+# Clean build directory
+npm run clean
+
+# Watch mode for development
+npm run watch
+
+# Test CLI connectivity
+npm run test:cli
+```
+
+## Usage
+
+### With MCP Inspector (Recommended for Development)
+```bash
+# Run with MCP inspector for testing
+npm run inspector
+```
+
+### With CLI Mode
+```bash
+# Run the CLI with MCP transport
+npm run start:cli
+
+# Or run directly (after build)
+node dist/cli.js
+```
+
+### As Global Command
+```bash
+# Install globally
 npm install -g exa-mcp-server
+
+# Run from anywhere
+exa-mcp-server
 ```
 
-### Using Smithery
-
-To install the Exa MCP server for Claude Desktop automatically via [Smithery](https://smithery.ai/server/exa):
-
+### Development Mode
 ```bash
-npx -y @smithery/cli install exa --client claude
+# Run in development mode with Smithery
+npm run dev
+
+# Test CLI connectivity
+npm run test:cli
 ```
 
-## Configuration ⚙️
+## Project Structure
 
-### 1. Configure Claude Desktop to recognize the Exa MCP server
-
-You can find claude_desktop_config.json inside the settings of Claude Desktop app:
-
-Open the Claude Desktop app and enable Developer Mode from the top-left menu bar. 
-
-Once enabled, open Settings (also from the top-left menu bar) and navigate to the Developer Option, where you'll find the Edit Config button. Clicking it will open the claude_desktop_config.json file, allowing you to make the necessary edits. 
-
-OR (if you want to open claude_desktop_config.json from terminal)
-
-#### For macOS:
-
-1. Open your Claude Desktop configuration:
-
-```bash
-code ~/Library/Application\ Support/Claude/claude_desktop_config.json
+```
+exa-mcp-server/
+├── src/                    # Source TypeScript files
+│   ├── auth/
+│   │   └── nango.ts       # Nango authentication
+│   ├── tools/             # Tool implementations
+│   ├── utils/             # Utility functions
+│   ├── index.ts           # Main server function
+│   ├── cli.ts             # CLI entry point with MCP transport
+│   └── types.ts           # Type definitions
+├── dist/                  # Compiled JavaScript (generated)
+│   ├── index.js           # Main server function
+│   ├── cli.js             # CLI entry point
+│   └── ...                # Other compiled files
+├── scripts/               # Build and test scripts
+├── .env                   # Environment variables
+├── .env.example           # Environment template
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
-#### For Windows:
+## Entry Points
 
-1. Open your Claude Desktop configuration:
+### 1. CLI Entry Point (`dist/cli.js`)
+- **Purpose**: MCP Inspector and command-line usage
+- **Transport**: StdioServerTransport (JSON-RPC over stdio)
+- **Usage**: `npm run inspector`, `npm run start:cli`, `exa-mcp-server`
 
-```powershell
-code %APPDATA%\Claude\claude_desktop_config.json
-```
+### 2. Server Function (`dist/index.js`)
+- **Purpose**: Programmatic usage and Smithery integration
+- **Transport**: Configurable (used by frameworks)
+- **Usage**: `npm run dev`, import as module
 
-### 2. Add the Exa server configuration:
+## Available Tools
 
-```json
+### 1. Web Search (`web_search_exa`)
+Performs real-time web searches using Exa AI.
+
+**Parameters:**
+- `query` (string): Search query
+- `numResults` (number, optional): Number of results to return (default: 5)
+
+### 2. Research Paper Search (`research_paper_search_exa`)
+Searches for academic papers and research.
+
+**Parameters:**
+- `query` (string): Research paper search query
+- `numResults` (number, optional): Number of papers to return (default: 5)
+
+### 3. Company Research (`company_research_exa`)
+Researches companies and organizations.
+
+**Parameters:**
+- `companyName` (string): Name of the company to research
+- `numResults` (number, optional): Number of results to return (default: 5)
+
+### 4. Web Crawling (`crawling_exa`)
+Extracts content from specific URLs.
+
+**Parameters:**
+- `url` (string): URL to crawl and extract content from
+- `maxCharacters` (number, optional): Maximum characters to extract (default: 3000)
+
+### 5. Competitor Finder (`competitor_finder_exa`)
+Finds business competitors and market analysis.
+
+**Parameters:**
+- `companyName` (string): Company to find competitors for
+- `industry` (string, optional): Industry sector to narrow search
+- `numResults` (number, optional): Number of competitors to find (default: 5)
+
+### 6. LinkedIn Search (`linkedin_search_exa`)
+Searches LinkedIn profiles and companies.
+
+**Parameters:**
+- `query` (string): LinkedIn search query
+- `searchType` (enum, optional): Type of search - "profiles", "companies", or "all" (default: "all")
+- `numResults` (number, optional): Number of results to return (default: 5)
+
+### 7. Wikipedia Search (`wikipedia_search_exa`)
+Searches Wikipedia articles.
+
+**Parameters:**
+- `query` (string): Wikipedia search query
+- `numResults` (number, optional): Number of articles to return (default: 5)
+
+### 8. GitHub Search (`github_search_exa`)
+Searches GitHub repositories and code.
+
+**Parameters:**
+- `query` (string): GitHub search query
+- `searchType` (enum, optional): Type of search - "repositories", "code", "users", or "all" (default: "all")
+- `numResults` (number, optional): Number of results to return (default: 5)
+
+## Configuration
+
+### Tool Selection
+
+You can configure which tools are enabled by setting the `enabledTools` parameter:
+
+```javascript
 {
-  "mcpServers": {
-    "exa": {
-      "command": "npx",
-      "args": ["-y", "exa-mcp-server"],
-      "env": {
-        "EXA_API_KEY": "your-api-key-here"
-      }
-    }
-  }
+  "enabledTools": ["web_search_exa", "research_paper_search_exa", "company_research_exa"]
 }
 ```
 
-Replace `your-api-key-here` with your actual Exa API key from [dashboard.exa.ai/api-keys](https://dashboard.exa.ai/api-keys).
+### Debug Mode
 
-### 3. Available Tools & Tool Selection
+Enable debug logging by setting `debug: true` in configuration or `DEBUG=true` in your `.env` file.
 
-The Exa MCP server includes the following tools, which can be enabled by adding the `--tools`:
+## Development
 
-- **web_search_exa**: Performs real-time web searches with optimized results and content extraction.
-- **research_paper_search**: Specialized search focused on academic papers and research content.
-- **company_research**: Comprehensive company research tool that crawls company websites to gather detailed information about businesses.
-- **crawling**: Extracts content from specific URLs, useful for reading articles, PDFs, or any web page when you have the exact URL.
-- **competitor_finder**: Identifies competitors of a company by searching for businesses offering similar products or services.
-- **linkedin_search**: Search LinkedIn for companies and people using Exa AI. Simply include company names, person names, or specific LinkedIn URLs in your query.
-- **wikipedia_search_exa**: Search and retrieve information from Wikipedia articles on specific topics, giving you accurate, structured knowledge from the world's largest encyclopedia.
-- **github_search**: Search GitHub repositories using Exa AI - performs real-time searches on GitHub.com to find relevant repositories, issues, and GitHub accounts.
+For detailed development instructions, see [DEVELOPMENT.md](DEVELOPMENT.md).
 
-You can choose which tools to enable by adding the `--tools` parameter to your Claude Desktop configuration:
-
-#### Specify which tools to enable:
-
-```json
-{
-  "mcpServers": {
-    "exa": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "exa-mcp-server",
-        "--tools=web_search_exa,research_paper_search,company_research,crawling,competitor_finder,linkedin_search,wikipedia_search_exa,github_search"
-      ],
-      "env": {
-        "EXA_API_KEY": "your-api-key-here"
-      }
-    }
-  }
-}
-```
-
-For enabling multiple tools, use a comma-separated list:
-
-```json
-{
-  "mcpServers": {
-    "exa": {
-      "command": "npx",
-      "args": [
-        "-y",
-        "exa-mcp-server",
-        "--tools=web_search_exa,research_paper_search,company_research,crawling,competitor_finder,linkedin_search,wikipedia_search_exa,github_search"
-      ],
-      "env": {
-        "EXA_API_KEY": "your-api-key-here"
-      }
-    }
-  }
-}
-```
-
-If you don't specify any tools, all tools enabled by default will be used.
-
-### 4. Restart Claude Desktop
-
-For the changes to take effect:
-
-1. Completely quit Claude Desktop (not just close the window)
-2. Start Claude Desktop again
-3. Look for the icon to verify the Exa server is connected
-
-## Using via NPX
-
-If you prefer to run the server directly, you can use npx:
-
+### Quick Development Setup
 ```bash
-# Run with all tools enabled by default
-npx exa-mcp-server
+# Install dependencies
+npm install
 
-# Enable specific tools only
-npx exa-mcp-server --tools=web_search_exa
+# Set up environment
+cp .env.example .env
+# Edit .env with your credentials
 
-# Enable multiple tools
-npx exa-mcp-server --tools=web_search_exa,research_paper_search
+# Build and test
+npm run build
+npm run test:cli
 
-# List all available tools
-npx exa-mcp-server --list-tools
+# Run with inspector
+npm run inspector
 ```
 
-## Troubleshooting 🔧
+## Testing
 
-### Common Issues
+### CLI Connectivity Test
+```bash
+# Test CLI startup and MCP connectivity
+npm run test:cli
+```
 
-1. **Server Not Found**
-   * Verify the npm link is correctly set up
-   * Check Claude Desktop configuration syntax (json file)
+### MCP Inspector
+```bash
+# Run with MCP inspector for interactive testing
+npm run inspector
+```
 
-2. **API Key Issues**
-   * Confirm your EXA_API_KEY is valid
-   * Check the EXA_API_KEY is correctly set in the Claude Desktop config
-   * Verify no spaces or quotes around the API key
+### Manual Testing
+```bash
+# Start CLI manually
+npm run start:cli
 
-3. **Connection Issues**
-   * Restart Claude Desktop completely
-   * Check Claude Desktop logs:
+# In another terminal, test with curl or MCP client
+# The CLI uses stdio transport for MCP communication
+```
 
-<br>
+## Migration from v1.x
+
+If you're migrating from version 1.x, see the detailed [MIGRATION.md](MIGRATION.md) guide.
+
+### Breaking Changes in v2.0.0
+
+- **Removed**: `exaApiKey` configuration parameter
+- **Removed**: `EXA_API_KEY` environment variable support
+- **Added**: Nango authentication system
+- **Added**: Required Nango environment variables
+- **Added**: TypeScript compilation to `dist/` directory
+- **Added**: Separate CLI entry point for MCP inspector
+- **Changed**: All tools now use Nango for authentication
+
+## Error Handling
+
+The server provides specific error messages for common authentication issues:
+
+- **Authentication Error**: "Failed to retrieve access token from Nango"
+- **Configuration Error**: "Missing required Nango environment variables"
+- **Connection Error**: API connection issues with detailed error messages
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Build and test: `npm run build && npm run test:cli`
+5. Test with inspector: `npm run inspector`
+6. Submit a pull request
+
+### Development Workflow
+```bash
+# Set up development environment
+npm install
+npm run build
+
+# Make changes to src/
+# ...
+
+# Rebuild and test
+npm run build
+npm run test:cli
+npm run inspector
+```
+
+## License
+
+This project is licensed under the MIT License.
+
+## Support
+
+For issues and questions:
+- Create an issue on GitHub
+- Check the [DEVELOPMENT.md](DEVELOPMENT.md) for development setup
+- Review the [MIGRATION.md](MIGRATION.md) for upgrade instructions
+- Test with MCP inspector: `npm run inspector`
+- Check the Nango documentation for authentication setup
+- Review the Exa AI documentation for API details
 
 ---
 
-Built with ❤️ by team Exa
+**Note**: This server requires proper Nango configuration to function. Make sure to set up your Nango integration and environment variables before using the server. Use `npm run inspector` to test with the MCP inspector.

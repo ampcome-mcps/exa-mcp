@@ -1,5 +1,8 @@
 node_modules/
+dist/
 build/
+.smithery/
 *.log
 .env*
-.smithery/
+*.tsbuildinfo
+.DS_Store

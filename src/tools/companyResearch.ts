@@ -1,14 +1,14 @@
 import { z } from "zod";
-import axios from "axios";
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { API_CONFIG } from "./config.js";
 import { ExaSearchRequest, ExaSearchResponse } from "../types.js";
 import { createRequestLogger } from "../utils/logger.js";
+import { createAuthenticatedAxiosInstance } from "../auth/nango.js";
 
-export function registerCompanyResearchTool(server: McpServer, config?: { exaApiKey?: string }): void {
+export function registerCompanyResearchTool(server: McpServer, config?: { debug?: boolean }): void {
   server.tool(
     "company_research_exa",
-    "Research companies using Exa AI - finds comprehensive information about businesses, organizations, and corporations. Provides insights into company operations, news, financial information, and industry analysis.",
+    "Research companies using Exa AI - finds comprehensive information about businesses, organizations, and corporations. Provides insights into company operations, news, financial information, and industry analysis. Uses Nango for authentication.",
     {
       companyName: z.string().describe("Name of the company to research"),
       numResults: z.number().optional().describe("Number of search results to return (default: 5)")
@@ -20,16 +20,9 @@ export function registerCompanyResearchTool(server: McpServer, config?: { exaApi
       logger.start(companyName);
       
       try {
-        // Create a fresh axios instance for each request
-        const axiosInstance = axios.create({
-          baseURL: API_CONFIG.BASE_URL,
-          headers: {
-            'accept': 'application/json',
-            'content-type': 'application/json',
-            'x-api-key': config?.exaApiKey || process.env.EXA_API_KEY || ''
-          },
-          timeout: 25000
-        });
+        // Create authenticated axios instance using Nango
+        logger.log("Creating authenticated axios instance via Nango");
+        const axiosInstance = await createAuthenticatedAxiosInstance(API_CONFIG.BASE_URL);
 
         const searchRequest: ExaSearchRequest = {
           query: `${companyName} company business corporation information news financial`,
@@ -78,16 +71,25 @@ export function registerCompanyResearchTool(server: McpServer, config?: { exaApi
       } catch (error) {
         logger.error(error);
         
-        if (axios.isAxiosError(error)) {
-          // Handle Axios errors specifically
-          const statusCode = error.response?.status || 'unknown';
-          const errorMessage = error.response?.data?.message || error.message;
-          
-          logger.log(`Axios error (${statusCode}): ${errorMessage}`);
+        // Handle authentication errors specifically
+        if (error instanceof Error && error.message.includes("Access token not found")) {
+          logger.log("Authentication error: Failed to retrieve access token from Nango");
           return {
             content: [{
               type: "text" as const,
-              text: `Company research error (${statusCode}): ${errorMessage}`
+              text: "Authentication error: Failed to retrieve access token from Nango. Please check your Nango configuration."
+            }],
+            isError: true,
+          };
+        }
+        
+        // Handle other specific errors
+        if (error instanceof Error && error.message.includes("Missing required Nango environment variables")) {
+          logger.log("Configuration error: Missing Nango environment variables");
+          return {
+            content: [{
+              type: "text" as const,
+              text: "Configuration error: Missing required Nango environment variables. Please check your .env file."
             }],
             isError: true,
           };
@@ -104,4 +106,4 @@ export function registerCompanyResearchTool(server: McpServer, config?: { exaApi
       }
     }
   );
-} 
+}

@@ -1,6 +1,10 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from "zod";
+import { config } from "dotenv";
+
+// Load environment variables from .env file
+config();
 
 // Import tool implementations
 import { registerWebSearchTool } from "./tools/webSearch.js";
@@ -13,9 +17,8 @@ import { registerWikipediaSearchTool } from "./tools/wikipediaSearch.js";
 import { registerGithubSearchTool } from "./tools/githubSearch.js";
 import { log } from "./utils/logger.js";
 
-// Configuration schema for the EXA API key and tool selection
+// Configuration schema for tool selection and debug options
 export const configSchema = z.object({
-  exaApiKey: z.string().optional().describe("Exa AI API key for search operations"),
   enabledTools: z.array(z.string()).optional().describe("List of tools to enable (if not specified, all tools are enabled)"),
   debug: z.boolean().default(false).describe("Enable debug logging")
 });
@@ -39,6 +42,8 @@ const availableTools = {
  * Exa is a search engine and API specifically designed for up-to-date web searching and retrieval,
  * offering more recent and comprehensive results than what might be available in an LLM's training data.
  * 
+ * The server now uses Nango for authentication instead of direct API key management.
+ * 
  * The server provides tools that enable:
  * - Real-time web searching with configurable parameters
  * - Research paper searches
@@ -49,20 +54,17 @@ const availableTools = {
 
 export default function ({ config }: { config: z.infer<typeof configSchema> }) {
   try {
-    // Set the API key in environment for tool functions to use
-    // process.env.EXA_API_KEY = config.exaApiKey;
-    
     if (config.debug) {
-      log("Starting Exa MCP Server in debug mode");
+      log("Starting Exa MCP Server in debug mode with Nango authentication");
     }
 
     // Create MCP server
     const server = new McpServer({
       name: "exa-search-server",
-      version: "1.0.0"
+      version: "2.0.0"
     });
     
-    log("Server initialized with modern MCP SDK and Smithery CLI support");
+    log("Server initialized with modern MCP SDK, Smithery CLI support, and Nango authentication");
 
     // Helper function to check if a tool should be registered
     const shouldRegisterTool = (toolId: string): boolean => {
